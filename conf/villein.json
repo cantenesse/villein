@@ -1,0 +1,16 @@
+{
+    "melite": {
+        "start_command": {
+            "name": "/etc/init.d/melite",
+            "type": "init"
+        },
+        "procname": "melite"
+    },
+    "helot": { 
+        "start_command": {
+            "name": "/etc/init.d/helot",
+            "type": "init"
+        },
+        "procname": "helot"
+    }
+}
