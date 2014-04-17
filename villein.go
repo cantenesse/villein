@@ -8,8 +8,8 @@ import (
   //"regexp"
   "io/ioutil"
   "encoding/json"
-  "strings"
-  "io"
+//  "strings"
+//  "io"
 )
 
 func visit(path string, f os.FileInfo, err error) error {
@@ -32,30 +32,35 @@ func visit(path string, f os.FileInfo, err error) error {
 //
 
 func main() {
-  type Config struct {
-    Process, Script, Type string
-  }
 
   // read the json file into a string
-  f, ferr := ioutil.ReadFile("conf/villein.conf")
+  f, ferr := ioutil.ReadFile("conf/villein.json")
   if ferr != nil {
     //CJA: figure out logging
     fmt.Printf("cannot read config")
   }
 
-  config := string(f)
+  //config := string(f)
 
-  dec := json.NewDecoder(strings.NewReader(config))
-  for {
-    var c Config
-    if err := dec.Decode(&c); err ==io.EOF {
-      break
-    } else if err != nil {
-      fmt.Printf("can't decode json")
-    }
-    fmt.Printf("%s: %s\n", c.Process, c.Script)
+  c := make(map[string]interface{})
+
+  e := json.Unmarshal(f, &c)
+
+  if e != nil {
+    fmt.Printf("unable decode json")
   }
 
+  k := make([]string, len(c))
+
+  i := 0
+
+  for s, _ := range c {
+    k[i] = s
+    i++
+  }
+
+  fmt.Printf("%#v\n", k)
+ 
   // get command line arg
   flag.Parse()
   
