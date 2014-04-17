@@ -5,12 +5,45 @@ import (
   "os"
   "flag"
   "fmt"
-  //"regexp"
+  _ "regexp"
   "io/ioutil"
   "encoding/json"
-//  "strings"
-//  "io"
+  _ "strings"
+  _ "io"
 )
+
+type AppList struct {
+  Applications []App
+}
+
+type App struct {
+  Name string
+  StartCommand map[string]string `json:"start_command"`
+  ProcName string `json:"procname"`
+}
+
+func NewAppList(source []byte) *AppList {
+  al := new(AppList)
+  al.Applications = make([]App, 0, 0)
+  al.FromJson(source)
+  return al
+}
+
+func (al *AppList) FromJson(source []byte) {
+  c := make(map[string]App)
+
+  e := json.Unmarshal(source, &c)
+
+  if e != nil {
+    fmt.Printf("unable decode json")
+  }
+
+   for key, value := range c {
+    value.Name = key
+    al.Applications = append(al.Applications, value)
+  }
+
+}
 
 func visit(path string, f os.FileInfo, err error) error {
   fmt.Printf("Visited: %s\n", path)
@@ -32,7 +65,6 @@ func visit(path string, f os.FileInfo, err error) error {
 //
 
 func main() {
-
   // read the json file into a string
   f, ferr := ioutil.ReadFile("conf/villein.json")
   if ferr != nil {
@@ -40,26 +72,10 @@ func main() {
     fmt.Printf("cannot read config")
   }
 
+  ap := NewAppList(f)
+  fmt.Println(ap)
   //config := string(f)
 
-  c := make(map[string]interface{})
-
-  e := json.Unmarshal(f, &c)
-
-  if e != nil {
-    fmt.Printf("unable decode json")
-  }
-
-  k := make([]string, len(c))
-
-  i := 0
-
-  for s, _ := range c {
-    k[i] = s
-    i++
-  }
-
-  fmt.Printf("%#v\n", k)
  
   // get command line arg
   flag.Parse()
